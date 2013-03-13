@@ -2,6 +2,8 @@ CREATE SEQUENCE posters_id_seq;
 CREATE SEQUENCE channels_id_seq;
 CREATE SEQUENCE links_id_seq;
 
+CREATE GROUP webapps;
+
 CREATE TABLE posters(
        pid integer PRIMARY KEY DEFAULT nextval('posters_id_seq'),
        nick varchar(16) NOT NULL CHECK (nick <> '') UNIQUE
@@ -21,9 +23,9 @@ CREATE TABLE links(
        CONSTRAINT unique_url UNIQUE(url)
 );
 
-GRANT ALL ON posters TO puavobot;
-GRANT ALL ON channels TO puavobot;
-GRANT ALL ON links TO puavobot;
-GRANT ALL ON SEQUENCE posters_id_seq TO puavobot;
-GRANT ALL ON SEQUENCE channels_id_seq TO puavobot;
-GRANT ALL ON SEQUENCE links_id_seq TO puavobot;
+GRANT ALL ON posters TO GROUP webapps;
+GRANT ALL ON channels TO GROUP webapps;
+GRANT ALL ON links TO GROUP webapps;
+GRANT ALL ON SEQUENCE posters_id_seq TO GROUP webapps;
+GRANT ALL ON SEQUENCE channels_id_seq TO GROUP webapps;
+GRANT ALL ON SEQUENCE links_id_seq TO GROUP webapps;
