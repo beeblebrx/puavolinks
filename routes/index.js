@@ -2,17 +2,24 @@
  * GET home page.
  */
 
+var moment = require('moment');
+
 exports.index = function(req, res){
     var pg = require('pg')
     var psqlClient = new pg.Client(process.env.DATABASE_URL);
     psqlClient.connect();
 
-    psqlClient.query("SELECT url FROM links", function(err, result) {
-	debugger;
+    psqlClient.query("SELECT l.url, p.nick, l.date_posted FROM links l, posters p WHERE l.poster = p.pid", function(err, result) {
 	if (!err) {
-	    var links = new Array();
+	    var links = [];
+
 	    for (var index in result.rows) {
-		links.push(result.rows[index].url);
+		debugger;
+		var row = result.rows[index];
+		links.push({ "url": row.url,
+			     "poster": row.nick,
+			     "date": moment(row.date_posted).format("DD.MM.YYYY HH:mm")
+					   });
 	    }
 	    res.render('index', { title: 'puavolinks', 'links': links });
 	} else {

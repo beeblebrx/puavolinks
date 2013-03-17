@@ -4,4 +4,7 @@ block content
   h1= title
   ul
     for link in links
-      li= link
+      li [#{link.date}] &lt;#{link.poster}&gt; 
+        a(href=link.url) #{link.url}
+    else
+      li Linkkejä ei vielä ole. Pastee jotain #puavolle.
