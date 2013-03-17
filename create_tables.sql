@@ -44,6 +44,7 @@ CREATE GROUP webapps;
 GRANT ALL ON posters TO GROUP webapps;
 GRANT ALL ON channels TO GROUP webapps;
 GRANT ALL ON links TO GROUP webapps;
+GRANT ALL ON keys TO GROUP webapps;
 GRANT ALL ON SEQUENCE posters_id_seq TO GROUP webapps;
 GRANT ALL ON SEQUENCE channels_id_seq TO GROUP webapps;
 GRANT ALL ON SEQUENCE links_id_seq TO GROUP webapps;

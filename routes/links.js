@@ -2,46 +2,22 @@ var pg = require('pg')
 var psqlClient = new pg.Client(process.env.DATABASE_URL);
 psqlClient.connect();
 
-function nextStep(linkTuple, steps, acc, success, failure) {
+function nextStep(linkObj, steps, success, failure) {
     if (steps && steps.length > 0) {
 	var f = steps.shift();
-	f(linkTuple, steps, acc, success, failure);
+	f(linkObj, steps, success, failure);
     } else {
 	success();
     }
 }
 
-function findChannel(linkTuple, steps, acc, success, failure) {
-    if (linkTuple.channel) {
-	var channelQuery = psqlClient.query("SELECT cid FROM channels WHERE channel_name=$1", [linkTuple.channel], function(err, result) {
+function findChannel(linkObj, steps, success, failure) {
+    if (linkObj.channel) {
+	var channelQuery = psqlClient.query("WITH new_channel (name) as (VALUES ($1)) INSERT INTO channels (channel_name) SELECT name FROM new_channel WHERE NOT EXISTS (SELECT 1 FROM channels c WHERE c.channel_name = new_channel.name)", [linkObj.channel], function(err, result) {
 	    if (!err) {
-		if (result.rows.length > 0) {
-		    console.log("Channel '" + linkTuple.channel + "' found in channels table.");
-		    acc.cid = result.rows[0].cid;
-		    nextStep(linkTuple, steps, acc, success, failure);
-		    return;
-		} else {
-		    console.log("Adding new channel to table: " + linkTuple.channel);
-		    psqlClient.query("INSERT INTO channels (channel_name) VALUES ($1)", [linkTuple.channel], function(inserr, insresult) {
-			if (!inserr) {
-			    psqlClient.query("SELECT cid FROM channels WHERE channel_name=$1", [linkTuple.channel], function(ciderr, cidresult) {
-				if (!ciderr) {
-				    acc.cid = cidresult.rows[0].cid;
-				    nextStep(linkTuple, steps, acc, success, failure);
-				    return;
-				} else {
-				    console.log(ciderr.toString());
-				    failure();
-				    return;
-				}
-			    });
-			} else {
-			    console.log(inserr.toString());
-			    failure();
-			    return;
-			}
-		    });
-		}
+		console.log("Channel '" + linkObj.channel + "' found or insterted in channels table.");
+		nextStep(linkObj, steps, success, failure);
+		return;
 	    } else {
 		console.log(err.toString());
 		failure();
@@ -51,37 +27,13 @@ function findChannel(linkTuple, steps, acc, success, failure) {
     }
 }
 
-function findPoster(linkTuple, steps, acc, success, failure) {
-    if (linkTuple.poster) {
-	var posterQuery = psqlClient.query("SELECT pid FROM posters WHERE nick=$1", [linkTuple.poster], function(err, result) {
+function findPoster(linkObj, steps, success, failure) {
+    if (linkObj.poster) {
+	var posterQuery = psqlClient.query("WITH new_poster (nick) as (VALUES ($1)) INSERT INTO posters (nick) SELECT nick FROM new_poster WHERE NOT EXISTS (SELECT 1 FROM posters p WHERE p.nick = new_poster.nick)", [linkObj.poster], function(err, result) {
 	    if (!err) {
-		if (result.rows.length > 0) {
-		    console.log("Nick '" + linkTuple.poster + "' found in posters table.");
-		    acc.pid = result.rows[0].pid;
-		    nextStep(linkTuple, steps, acc, success, failure);
-		    return;
-		} else {
-		    console.log("Adding new poster to table: " + linkTuple.poster);
-		    psqlClient.query("INSERT INTO posters (nick) VALUES ($1)", [linkTuple.poster], function(inserr, insresult) {
-			if (!inserr) {
-			    psqlClient.query("SELECT pid FROM posters WHERE nick=$1", [linkTuple.poster], function(piderr, pidresult) {
-				if (!piderr) {
-				    acc.pid = pidresult.rows[0].pid;
-				    nextStep(linkTuple, steps, acc, success, failure);
-				    return;
-				} else {
-				    console.log(piderr.toString());
-				    failure();
-				    return;
-				}
-			    });
-			} else {
-			    console.log(inserr.toString());
-			    failure();
-			    return;
-			}
-		    });
-		}
+		console.log("Nick '" + linkObj.poster + "' found or inserted in posters table.");
+		nextStep(linkObj, steps, success, failure);
+		return;
 	    } else {
 		console.log(err.toString());
 		failure();
@@ -91,35 +43,55 @@ function findPoster(linkTuple, steps, acc, success, failure) {
     }
 }
 
-function addLink(linkTuple, steps, acc, success, failure) {
-    debugger;
-    console.log("Inserting '" + linkTuple.url + "' from channel id " + acc.cid + ", poster id " + acc.pid);
-    if (acc.cid && acc.pid && linkTuple.url) {
-	psqlClient.query("INSERT INTO links (url, poster, channel) VALUES ($1, $2, $3)", [linkTuple.url, acc.pid, acc.cid], function(err, result) {
+function addLink(linkObj, steps, success, failure) {
+    if (linkObj.url) {
+	psqlClient.query("INSERT INTO links (url, poster, channel) VALUES ($1, (SELECT pid FROM posters WHERE nick = $2), (SELECT cid FROM channels WHERE channel_name = $3))", [linkObj.url, linkObj.poster, linkObj.channel], function(err, result) {
 	    if (err) {
 		console.log(err.toString());
 		failure();
 		return;
 	    }
 
-	    nextStep(linkTuple, steps, acc, success, failure);
+	    nextStep(linkObj, steps, success, failure);
 	});
     }
 }
 
-function storeLink(linkTuple, steps, success, failure) {
-    if (!linkTuple || !steps || steps.length == 0) {
+function storeLink(linkObj, steps, success, failure) {
+    if (!linkObj || !steps || steps.length == 0) {
 	failure();
 	return;
     }
 
-    nextStep(linkTuple, steps, {}, success, failure);
+    nextStep(linkObj, steps, success, failure);
+}
+
+function hasAccess(key) {
+    if (!key)
+	return false;
+
+    psqlClient.query("SELECT * FROM keys k WHERE k.key = $1 AND k.active", [key], function(err, result) {
+	if (!err) {
+	    return result.rows.length > 0;
+	} else {
+	    return false;
+	}
+    });
 }
 
 exports.add = function(req, res){
     var channel = req.params.channel;
     var poster = req.params.poster;
     var url = req.body.url;
+    var key = req.body.key;
+
+    if (!hasAccess(key)) {
+	console.log("Access denied for key " + key);
+	res.writeHead(403, "Access denied", {'Content-Type': 'text/html'});
+	res.end();
+	return;
+    }
+
     console.log("POST to addLink. channel: " + channel + ", poster: " + poster + ", URL: " + url);
     
     storeLink({"url": url, "channel": channel, "poster": poster}, [findChannel, findPoster, addLink],
