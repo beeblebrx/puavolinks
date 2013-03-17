@@ -33,7 +33,7 @@ CREATE TABLE links(
 DROP TABLE IF EXISTS keys;
 CREATE TABLE keys(
        id integer PRIMARY KEY DEFAULT nextval('keys_id_seq'),
-       key char(16) NOT NULL,
+       key varchar(16) NOT NULL,
        active boolean NOT NULL,
        botname varchar(16)
 );

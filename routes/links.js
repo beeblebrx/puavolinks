@@ -66,15 +66,17 @@ function storeLink(linkObj, steps, success, failure) {
     nextStep(linkObj, steps, success, failure);
 }
 
-function hasAccess(key) {
-    if (!key)
-	return false;
+function hasAccess(key, onAccessGranted, onAccessDenied) {
+    if (!key) {
+	onAccessDenied();
+	return;
+    }
 
-    psqlClient.query("SELECT * FROM keys k WHERE k.key = $1 AND k.active", [key], function(err, result) {
-	if (!err) {
-	    return result.rows.length > 0;
+    psqlClient.query("SELECT * FROM keys WHERE key = $1 AND active = TRUE", [key], function(err, result) {
+	if (!err && result.rows.length > 0) {
+	    onAccessGranted();
 	} else {
-	    return false;
+	    onAccessDenied();
 	}
     });
 }
@@ -85,22 +87,26 @@ exports.add = function(req, res){
     var url = req.body.url;
     var key = req.body.key;
 
-    if (!hasAccess(key)) {
-	console.log("Access denied for key " + key);
-	res.writeHead(403, "Access denied", {'Content-Type': 'text/html'});
-	res.end();
-	return;
-    }
-
-    console.log("POST to addLink. channel: " + channel + ", poster: " + poster + ", URL: " + url);
-    
-    storeLink({"url": url, "channel": channel, "poster": poster}, [findChannel, findPoster, addLink],
+    hasAccess(key,
 	      function() {
-		  res.writeHead(204, "URL saved", {'Content-Type': 'text/html'});
-		  res.end();
+		  console.log("POST to addLink. channel: " + channel + ", poster: " + poster + ", URL: " + url);
+		  
+		  storeLink({"url": url, "channel": channel, "poster": poster}, [findChannel, findPoster, addLink],
+			    function() {
+				res.writeHead(204, "URL saved", {'Content-Type': 'text/html'});
+				res.end();
+			    },
+			    function() {
+				res.writeHead(500, "URL not saved", {'Content-Type': 'text/html'});
+				res.end();
+			    });
 	      },
-	      function() {
-		  res.writeHead(500, "URL not saved", {'Content-Type': 'text/html'});
+	      function()
+	      {
+		  console.log("Access denied for key " + key);
+		  res.writeHead(403, "Access denied", {'Content-Type': 'text/html'});
 		  res.end();
-	      });
-};
+		  return;
+	      }
+	     );
+}
