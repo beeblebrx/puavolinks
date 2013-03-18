@@ -14,11 +14,12 @@ exports.index = function(req, res){
 	    var links = [];
 
 	    for (var index in result.rows) {
+		var offset = moment().isDST() ? 3 : 2;
 		debugger;
 		var row = result.rows[index];
 		links.push({ "url": row.url,
 			     "poster": row.nick,
-			     "date": moment(row.date_posted).format("DD.MM.YYYY HH:mm")
+			     "date": moment(row.date_posted).add('h', offset).format("DD.MM.YYYY HH:mm")
 					   });
 	    }
 	    res.render('index', { title: 'puavolinks', 'links': links });
