@@ -1,10 +1,39 @@
-extends layout
-
-block content
-  h1= title
-  ul
-    for link in links
-      li [#{link.date}] &lt;#{link.poster}&gt; 
-        a(href=link.url) #{link.url}
-    else
-      li Linkkejä ei vielä ole. Pastee jotain #puavolle.
+!!! 5
+//if lt IE 7
+  html.no-js.lt-ie9.lt-ie8.lt-ie7  
+//if IE 7
+  html.no-js.lt-ie9.lt-ie8  
+//if IE 8
+  html.no-js.lt-ie9  
+// [if gt IE 8] <!
+html.no-js
+  // <![endif]
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    title
+    meta(name='description', content='')
+    meta(name='viewport', content='width=device-width')
+    link(rel='stylesheet', href='stylesheets/normalize.min.css')
+    link(rel='stylesheet', href='stylesheets/main.css')
+    script(src='javascripts/vendor/modernizr-2.6.2-respond-1.1.0.min.js')
+  body
+    //if lt IE 7
+      p.chromeframe
+        | Mikä tää on? Joku selain vai? Nyt vittu oikeesti meet lataamaan jonkun selaimen, joka on tehty tällä vuosituhannella.
+    .header-container
+      header.wrapper.clearfix
+        h1.title= title
+    .main-container
+      .main.wrapper.clearfix
+        article
+          section
+            for link in links
+              p.link [#{link.date}] &lt;#{link.poster}&gt; 
+                a(href=link.url) #{link.url}
+      // #main
+    // #main-container
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+    script
+      window.jQuery || document.write('<script src="javascripts/vendor/jquery-1.9.1.min.js"><\\/script>')
+    script(src='javascripts/main.js')
