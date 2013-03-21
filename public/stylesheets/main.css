@@ -165,12 +165,14 @@ h1 {
     font-size: 2.5em;
 }
 
+.pages {
+    margin: 0px;
+    color: rgb(0,0,0);
+}
 
-
-
-
-
-
+.pages a {
+    color: rgb(0,0,255);
+}
 
 
 
@@ -209,6 +211,23 @@ h1 {
 	padding-right: 1em;
     }
 
+    .pagediv {
+	background-color: rgb(241, 101, 41);
+	border: 1px solid rgb(100,100,100);
+	border-radius: 4px;
+	height: 2em;
+	padding-right: 2em;
+	padding-left: 2em;
+    }
+
+    .pages {
+	margin: 0px;
+	color: rgb(255,255,255);
+    }
+    
+    .pages a {
+	color: rgb(255, 255, 255);
+    }
 
 /* ========================
     INTERMEDIATE: IE Fixes
@@ -266,6 +285,25 @@ h1 {
     .main aside {
         float: right;
         width: 28%;
+    }
+
+    .pagediv {
+	background-color: rgb(241, 101, 41);
+	border: 1px solid rgb(100,100,100);
+	border-radius: 4px;
+	width: 80%;
+	height: 2em;
+	padding-right: 2em;
+	padding-left: 2em;
+    }
+
+    .pages {
+	margin: 0px;
+	color: rgb(255,255,255);
+    }
+
+    .pages a {
+	color: rgb(255, 255, 255);
     }
 }
 

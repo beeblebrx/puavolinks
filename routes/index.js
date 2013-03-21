@@ -4,6 +4,8 @@
 
 var moment = require('moment');
 
+function range1(i){return i?range1(i-1).concat(i):[]}
+
 exports.index = function(req, res){
     var pg = require('pg')
     var psqlClient = new pg.Client(process.env.DATABASE_URL);
@@ -15,23 +17,34 @@ exports.index = function(req, res){
 	page = 0;
     }
 
-    psqlClient.query("SELECT * FROM (SELECT l.url, p.nick, l.date_posted FROM links l, posters p WHERE l.poster = p.pid ORDER BY l.date_posted DESC LIMIT $1 OFFSET $2) subq ORDER BY date_posted ASC", [pageSize, page * pageSize], function(err, result) {
-	if (!err) {
-	    var links = [];
-
-	    for (var index in result.rows) {
-		var offset = moment().isDST() ? 3 : 2;
-		var row = result.rows[index];
-		links.push({ "url": row.url,
-			     "poster": row.nick,
-			     "date": moment(row.date_posted).add('h', offset).format("DD.MM.YYYY HH:mm")
-			   });
-	    }
-	    res.render('index', { title: 'puavolinks', 'links': links });
-	} else {
+    psqlClient.query("SELECT count(*) FROM links", function(countErr, countResult) {
+	if (countErr)  {
 	    res.render('error', { title: 'FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU'} );
+	    psqlClient.end();
+	    return;
 	}
 
-	psqlClient.end();
+	var numPages = Math.ceil(countResult.rows[0].count / pageSize);
+	debugger;
+	psqlClient.query("SELECT * FROM (SELECT l.url, p.nick, l.date_posted FROM links l, posters p WHERE l.poster = p.pid ORDER BY l.date_posted DESC LIMIT $1 OFFSET $2) subq ORDER BY date_posted ASC", [pageSize, page * pageSize], function(err, result) {
+	    if (!err) {
+		var links = [];
+
+		for (var index in result.rows) {
+		    var offset = moment().isDST() ? 3 : 2;
+		    var row = result.rows[index];
+		    links.push({ "url": row.url,
+				 "poster": row.nick,
+				 "date": moment(row.date_posted).add('h', offset).format("DD.MM.YYYY HH:mm")
+			       });
+		}
+		
+		res.render('index', { title: 'puavolinks', 'links': links, 'pages': range1(numPages) });
+	    } else {
+		res.render('error', { title: 'FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU'} );
+	    }
+	    
+	    psqlClient.end();
+	});
     });
 };

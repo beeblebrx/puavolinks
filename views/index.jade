@@ -26,6 +26,12 @@ html.no-js
         h1.title= title
     .main-container
       .main.wrapper.clearfix
+        div.pagediv
+          strong
+            p.pages Sivu: 
+              for page in pages
+                a(href='/?page=#{page-1}') #{page}
+                |  
         article
           section
             for link in links
