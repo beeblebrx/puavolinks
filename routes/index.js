@@ -10,17 +10,9 @@ exports.index = function(req, res){
     psqlClient.connect();
 
     var pageSize = 20;
-    var page = 0;
-
-    try {
-	page = parseInt(req.query.page);
-	debugger;
-	if (page === 'NaN') {
-	    page = 0;
-	}
-	debugger;
-    } catch(erska) {
-	// Leave page to its default value.
+    var page = parseInt(req.query.page);
+    if (isNaN(page)) {
+	page = 0;
     }
 
     psqlClient.query("SELECT * FROM (SELECT l.url, p.nick, l.date_posted FROM links l, posters p WHERE l.poster = p.pid ORDER BY l.date_posted DESC LIMIT $1 OFFSET $2) subq ORDER BY date_posted ASC", [pageSize, page * pageSize], function(err, result) {
