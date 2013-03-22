@@ -204,6 +204,7 @@ h1 {
 
     .main article {
         float: left;
+	width: 95%;
 	background-color: rgb(247,247,249);
 	border: 1px solid rgb(225,225,232);
 	border-radius: 4px;
@@ -216,8 +217,9 @@ h1 {
 	border: 1px solid rgb(100,100,100);
 	border-radius: 4px;
 	height: 2em;
-	padding-right: 2em;
-	padding-left: 2em;
+	width: 95%;
+	padding-right: 1em;
+	padding-left: 1em;
     }
 
     .pages {
@@ -274,7 +276,7 @@ h1 {
 
     .main article {
         float: left;
-        width: 80%;
+        width: 90%;
 	background-color: rgb(247,247,249);
 	border: 1px solid rgb(225,225,232);
 	border-radius: 4px;
@@ -291,7 +293,7 @@ h1 {
 	background-color: rgb(241, 101, 41);
 	border: 1px solid rgb(100,100,100);
 	border-radius: 4px;
-	width: 80%;
+	width: 90%;
 	height: 2em;
 	padding-right: 2em;
 	padding-left: 2em;
