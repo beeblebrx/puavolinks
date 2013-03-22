@@ -13,6 +13,8 @@ textarea {
 body {
     font-size: 1em;
     line-height: 1.4;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
 }
 
 ::-moz-selection {
@@ -166,7 +168,7 @@ h1 {
 }
 
 .pages {
-    margin: 0px;
+    margin: 3px;
     color: rgb(0,0,0);
 }
 
@@ -174,6 +176,9 @@ h1 {
     color: rgb(0,0,255);
 }
 
+article {
+    overflow: hidden;
+}
 
 
 /* ==========================================================================
@@ -185,6 +190,12 @@ h1 {
 /* ====================
     INTERMEDIATE: Menu
    ==================== */
+    .header-container,
+    .main aside {
+        -webkit-box-shadow: 0 5px 10px #aaa;
+        -moz-box-shadow: 0 5px 10px #aaa;
+        box-shadow: 0 5px 10px #aaa;
+    }
 
     nav a {
         float: left;
@@ -223,12 +234,15 @@ h1 {
     }
 
     .pages {
-	margin: 0px;
 	color: rgb(255,255,255);
     }
     
     .pages a {
-	color: rgb(255, 255, 255);
+	color: rgb(255,255,255);
+    }
+
+    .active {
+	font-size: 1.5em;
     }
 
 /* ========================
@@ -300,12 +314,15 @@ h1 {
     }
 
     .pages {
-	margin: 0px;
 	color: rgb(255,255,255);
     }
 
     .pages a {
 	color: rgb(255, 255, 255);
+    }
+
+    .active {
+	font-size: 1.5em;
     }
 }
 
@@ -381,75 +398,4 @@ h1 {
 
 .clearfix {
     *zoom: 1;
-}
-
-/* ==========================================================================
-   Print styles
-   ========================================================================== */
-
-@media print {
-    * {
-        background: transparent !important;
-        color: #000 !important; /* Black prints faster: h5bp.com/s */
-        box-shadow: none !important;
-        text-shadow: none !important;
-    }
-
-    a,
-    a:visited {
-        text-decoration: underline;
-    }
-
-    a[href]:after {
-        content: " (" attr(href) ")";
-    }
-
-    abbr[title]:after {
-        content: " (" attr(title) ")";
-    }
-
-    /*
-     * Don't show links for images, or javascript/internal links
-     */
-
-    .ir a:after,
-    a[href^="javascript:"]:after,
-    a[href^="#"]:after {
-        content: "";
-    }
-
-    pre,
-    blockquote {
-        border: 1px solid #999;
-        page-break-inside: avoid;
-    }
-
-    thead {
-        display: table-header-group; /* h5bp.com/t */
-    }
-
-    tr,
-    img {
-        page-break-inside: avoid;
-    }
-
-    img {
-        max-width: 100% !important;
-    }
-
-    @page {
-        margin: 0.5cm;
-    }
-
-    p,
-    h2,
-    h3 {
-        orphans: 3;
-        widows: 3;
-    }
-
-    h2,
-    h3 {
-        page-break-after: avoid;
-    }
 }

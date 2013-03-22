@@ -14,9 +14,8 @@ html.no-js
     title
     meta(name='description', content='')
     meta(name='viewport', content='width=device-width')
-    link(rel='stylesheet', href='stylesheets/normalize.min.css')
     link(rel='stylesheet', href='stylesheets/main.css')
-    script(src='javascripts/vendor/modernizr-2.6.2-respond-1.1.0.min.js')
+    link(rel='stylesheet', href='bootstrap/css/bootstrap.min.css')
   body
     //if lt IE 7
       p.chromeframe
@@ -30,16 +29,18 @@ html.no-js
           strong
             p.pages Sivu: 
               for page in pages
-                a(href='/?page=#{page-1}') #{page}
+                a(id=page, href='/?page=#{page-1}') #{page}
                 |  
         article
           section
             for link in links
               p.link [#{link.date}] &lt;#{link.poster}&gt; 
                 a(href=link.url) #{link.url}
+        input(type='hidden', id='pageNum', value='#{pageNum}')
       // #main
     // #main-container
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
     script
       window.jQuery || document.write('<script src="javascripts/vendor/jquery-1.9.1.min.js"><\\/script>')
+    script(src='bootstrap/js/bootstrap.min.js')
     script(src='javascripts/main.js')

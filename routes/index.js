@@ -39,7 +39,7 @@ exports.index = function(req, res){
 			       });
 		}
 		
-		res.render('index', { title: 'puavolinks', 'links': links, 'pages': range1(numPages) });
+		res.render('index', { title: 'puavolinks', 'links': links, 'pages': range1(numPages), 'pageNum': page + 1 });
 	    } else {
 		res.render('error', { title: 'FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU'} );
 	    }
