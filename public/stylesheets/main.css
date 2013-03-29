@@ -167,6 +167,11 @@ h1 {
     font-size: 2.5em;
 }
 
+.pagediv p {
+    margin: 3px;
+    color: rgb(0,0,0);
+}
+
 .pages {
     margin: 3px;
     color: rgb(0,0,0);
@@ -233,10 +238,14 @@ article {
 	padding-left: 1em;
     }
 
+    .pagediv p {
+        color: rgb(255,255,255);
+    }
+
     .pages {
 	color: rgb(255,255,255);
     }
-    
+
     .pages a {
 	color: rgb(255,255,255);
     }
@@ -311,6 +320,10 @@ article {
 	height: 2em;
 	padding-right: 2em;
 	padding-left: 2em;
+    }
+
+    .pagediv p {
+        color: rgb(255,255,255);
     }
 
     .pages {

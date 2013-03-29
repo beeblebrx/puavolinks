@@ -4,8 +4,6 @@
 
 var moment = require('moment');
 
-function range1(i){return i?range1(i-1).concat(i):[];}
-
 exports.index = function(req, res){
     var pg = require('pg');
     var psqlClient = new pg.Client(process.env.DATABASE_URL);
@@ -37,7 +35,7 @@ exports.index = function(req, res){
 			       });
 		}
 
-		res.render('index', { title: 'puavolinks', 'links': links, 'pages': range1(numPages), 'pageNum': page + 1 });
+		res.render('index', { title: 'puavolinks', 'links': links, 'pages': numPages, 'pageNum': page });
 	    } else {
 		res.render('error', { title: 'FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU'} );
 	    }

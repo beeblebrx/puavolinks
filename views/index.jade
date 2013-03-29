@@ -1,10 +1,10 @@
 !!! 5
 //if lt IE 7
-  html.no-js.lt-ie9.lt-ie8.lt-ie7  
+  html.no-js.lt-ie9.lt-ie8.lt-ie7
 //if IE 7
-  html.no-js.lt-ie9.lt-ie8  
+  html.no-js.lt-ie9.lt-ie8
 //if IE 8
-  html.no-js.lt-ie9  
+  html.no-js.lt-ie9
 // [if gt IE 8] <!
 html.no-js
   // <![endif]
@@ -27,16 +27,16 @@ html.no-js
       .main.wrapper.clearfix
         div.pagediv
           strong
-            p.pages Sivu: 
-              for page in pages
-                a(id=page, href='/?page=#{page-1}') #{page}
-                |  
+            p.pages
+              span.pageLabel Sivu:
+              span.numbers
         article
           section
             for link in links
-              p.link [#{link.date}] &lt;#{link.poster}&gt; 
+              p.link [#{link.date}] &lt;#{link.poster}&gt;
                 a(href=link.url) #{link.url}
         input(type='hidden', id='pageNum', value='#{pageNum}')
+        input(type='hidden', id='pages', value='#{pages}')
       // #main
     // #main-container
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
