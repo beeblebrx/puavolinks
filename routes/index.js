@@ -23,7 +23,7 @@ exports.index = function(req, res){
 	}
 
 	var numPages = Math.ceil(countResult.rows[0].count / pageSize);
-	psqlClient.query("SELECT l.url, p.nick, l.date_posted AT TIME ZONE 'EET' AS date_posted FROM links l, posters p WHERE l.poster = p.pid ORDER BY l.date_posted DESC LIMIT $1 OFFSET $2", [pageSize, page * pageSize], function(err, result) {
+	psqlClient.query("SELECT l.url, p.nick, l.date_posted AT TIME ZONE 'Europe/Helsinki' AS date_posted FROM links l, posters p WHERE l.poster = p.pid ORDER BY l.date_posted DESC LIMIT $1 OFFSET $2", [pageSize, page * pageSize], function(err, result) {
 	    if (!err) {
 		var links = [];
 
