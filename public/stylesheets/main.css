@@ -185,6 +185,16 @@ article {
     overflow: hidden;
 }
 
+.linkdate {
+    font-size: 0.9em;
+}
+
+.link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 /* ==========================================================================
    Media Queries
@@ -196,6 +206,8 @@ article {
     INTERMEDIATE: Menu
    ==================== */
     .header-container,
+    .main article,
+    .pagediv,
     .main aside {
         -webkit-box-shadow: 0 5px 10px #aaa;
         -moz-box-shadow: 0 5px 10px #aaa;
@@ -221,7 +233,7 @@ article {
     .main article {
         float: left;
 	width: 95%;
-	background-color: rgb(247,247,249);
+	background-color: rgb(255,255,255);
 	border: 1px solid rgb(225,225,232);
 	border-radius: 4px;
 	padding-left: 1em;
@@ -236,6 +248,7 @@ article {
 	width: 95%;
 	padding-right: 1em;
 	padding-left: 1em;
+        margin-bottom: 1em;
     }
 
     .pagediv p {
@@ -252,6 +265,19 @@ article {
 
     .active {
 	font-size: 1.5em;
+    }
+
+    .linkdate {
+        white-space: nowrap;
+    }
+
+    .poster {
+        font-weight:bold;
+        color: rgb(228,77,38);
+    }
+
+    th {
+        font-size: 1.1em;
     }
 
 /* ========================
@@ -300,7 +326,7 @@ article {
     .main article {
         float: left;
         width: 90%;
-	background-color: rgb(247,247,249);
+	background-color: rgb(255,255,255);
 	border: 1px solid rgb(225,225,232);
 	border-radius: 4px;
 	padding-left: 2em;
@@ -320,6 +346,7 @@ article {
 	height: 2em;
 	padding-right: 2em;
 	padding-left: 2em;
+        margin-bottom: 1em;
     }
 
     .pagediv p {

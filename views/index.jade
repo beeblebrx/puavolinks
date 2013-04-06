@@ -32,9 +32,21 @@ html.no-js
               span.numbers
         article
           section
-            for link in links
-              p.link [#{link.date}] &lt;#{link.poster}&gt;
-                a(href=link.url) #{link.url}
+            table.table
+              thead
+                tr
+                  th Aika
+                  th Nick
+                  th URL
+              for link in links
+                tr
+                 td
+                   span.linkdate #{link.date}
+                 td
+                   span.poster #{link.poster}
+                 td
+                   span.link
+                     a(href=link.url) #{link.url}
         input(type='hidden', id='pageNum', value='#{pageNum}')
         input(type='hidden', id='pages', value='#{pages}')
       // #main
