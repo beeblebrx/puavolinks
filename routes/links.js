@@ -1,22 +1,21 @@
-var pg = require('pg')
-var psqlClient = new pg.Client(process.env.DATABASE_URL);
-psqlClient.connect();
+var pg = require('pg');
 
-function nextStep(linkObj, steps, success, failure) {
+function nextStep(linkObj, steps, success, failure, psqlClient, done) {
     if (steps && steps.length > 0) {
 	var f = steps.shift();
-	f(linkObj, steps, success, failure);
+	f(linkObj, steps, success, failure, psqlClient, done);
     } else {
 	success();
+        done();
     }
 }
 
-function findChannel(linkObj, steps, success, failure) {
+function findChannel(linkObj, steps, success, failure, psqlClient, done) {
     if (linkObj.channel) {
-	var channelQuery = psqlClient.query("WITH new_channel (name) as (VALUES ($1)) INSERT INTO channels (channel_name) SELECT name FROM new_channel WHERE NOT EXISTS (SELECT 1 FROM channels c WHERE c.channel_name = new_channel.name)", [linkObj.channel], function(err, result) {
+	psqlClient.query("WITH new_channel (name) as (VALUES ($1)) INSERT INTO channels (channel_name) SELECT name FROM new_channel WHERE NOT EXISTS (SELECT 1 FROM channels c WHERE c.channel_name = new_channel.name)", [linkObj.channel], function(err, result) {
 	    if (!err) {
 		console.log("Channel '" + linkObj.channel + "' found or insterted in channels table.");
-		nextStep(linkObj, steps, success, failure);
+		nextStep(linkObj, steps, success, failure, psqlClient, done);
 		return;
 	    } else {
 		console.log(err.toString());
@@ -27,12 +26,13 @@ function findChannel(linkObj, steps, success, failure) {
     }
 }
 
-function findPoster(linkObj, steps, success, failure) {
+function findPoster(linkObj, steps, success, failure, psqlClient, done) {
     if (linkObj.poster) {
-	var posterQuery = psqlClient.query("WITH new_poster (nick) as (VALUES ($1)) INSERT INTO posters (nick) SELECT nick FROM new_poster WHERE NOT EXISTS (SELECT 1 FROM posters p WHERE p.nick = new_poster.nick)", [linkObj.poster], function(err, result) {
+        debugger;
+	psqlClient.query("WITH new_poster (nick) as (VALUES ($1)) INSERT INTO posters (nick) SELECT nick FROM new_poster WHERE NOT EXISTS (SELECT 1 FROM posters p WHERE p.nick = new_poster.nick)", [linkObj.poster], function(err, result) {
 	    if (!err) {
 		console.log("Nick '" + linkObj.poster + "' found or inserted in posters table.");
-		nextStep(linkObj, steps, success, failure);
+		nextStep(linkObj, steps, success, failure, psqlClient, done);
 		return;
 	    } else {
 		console.log(err.toString());
@@ -43,7 +43,7 @@ function findPoster(linkObj, steps, success, failure) {
     }
 }
 
-function addLink(linkObj, steps, success, failure) {
+function addLink(linkObj, steps, success, failure, psqlClient, done) {
     if (linkObj.url) {
 	psqlClient.query("INSERT INTO links (url, poster, channel) VALUES ($1, (SELECT pid FROM posters WHERE nick = $2), (SELECT cid FROM channels WHERE channel_name = $3))", [linkObj.url, linkObj.poster, linkObj.channel], function(err, result) {
 	    if (err) {
@@ -52,7 +52,7 @@ function addLink(linkObj, steps, success, failure) {
 		return;
 	    }
 
-	    nextStep(linkObj, steps, success, failure);
+	    nextStep(linkObj, steps, success, failure, psqlClient, done);
 	});
     }
 }
@@ -62,8 +62,15 @@ function storeLink(linkObj, steps, success, failure) {
 	failure();
 	return;
     }
+    pg.connect(process.env.DATABASE_URL, function(error, psqlClient, done) {
+        if (error) {
+            failure();
+            done();
+            return;
+        }
 
-    nextStep(linkObj, steps, success, failure);
+        nextStep(linkObj, steps, success, failure, psqlClient, done);
+    });
 }
 
 function hasAccess(key, onAccessGranted, onAccessDenied) {
@@ -72,12 +79,22 @@ function hasAccess(key, onAccessGranted, onAccessDenied) {
 	return;
     }
 
-    psqlClient.query("SELECT * FROM keys WHERE key = $1 AND active = TRUE", [key], function(err, result) {
-	if (!err && result.rows.length > 0) {
-	    onAccessGranted();
-	} else {
-	    onAccessDenied();
-	}
+    pg.connect(process.env.DATABASE_URL, function(e, psqlClient, done) {
+        if (e) {
+            onAccessDenied();
+            done();
+            return;
+        }
+
+        psqlClient.query("SELECT * FROM keys WHERE key = $1 AND active = TRUE", [key], function(err, result) {
+	    if (!err && result.rows.length > 0) {
+	        onAccessGranted();
+	    } else {
+	        onAccessDenied();
+	    }
+        });
+
+        done();
     });
 }
 
@@ -90,7 +107,7 @@ exports.add = function(req, res){
     hasAccess(key,
 	      function() {
 		  console.log("POST to addLink. channel: " + channel + ", poster: " + poster + ", URL: " + url);
-		  
+
 		  storeLink({"url": url, "channel": channel, "poster": poster}, [findChannel, findPoster, addLink],
 			    function() {
 				res.writeHead(204, "URL saved", {'Content-Type': 'text/html'});
@@ -109,4 +126,4 @@ exports.add = function(req, res){
 		  return;
 	      }
 	     );
-}
+};
