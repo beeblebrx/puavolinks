@@ -7,6 +7,12 @@ var pg = require('pg');
 
 exports.index = function(req, res){
     pg.connect(process.env.DATABASE_URL, function(e, psqlClient, done) {
+        if (e) {
+            error(e);
+            console.log(e.toString());
+            return;
+        }
+
         var pageSize = 20;
         var page = parseInt(req.query.page);
         if (isNaN(page)) {

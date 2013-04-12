@@ -65,7 +65,6 @@ function storeLink(linkObj, steps, success, failure) {
     pg.connect(process.env.DATABASE_URL, function(error, psqlClient, done) {
         if (error) {
             failure();
-            done();
             return;
         }
 
@@ -82,7 +81,6 @@ function hasAccess(key, onAccessGranted, onAccessDenied) {
     pg.connect(process.env.DATABASE_URL, function(e, psqlClient, done) {
         if (e) {
             onAccessDenied();
-            done();
             return;
         }
 
