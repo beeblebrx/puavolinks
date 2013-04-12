@@ -8,7 +8,7 @@ var pg = require('pg');
 exports.index = function(req, res){
     pg.connect(process.env.DATABASE_URL, function(e, psqlClient, done) {
         if (e) {
-            error(e);
+            error(res);
             console.log(e.toString());
             return;
         }
