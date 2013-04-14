@@ -14,39 +14,35 @@ html.no-js
     title
     meta(name='description', content='')
     meta(name='viewport', content='width=device-width')
+    link(rel='stylesheet', href='stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='stylesheets/main.css')
-    link(rel='stylesheet', href='bootstrap/css/bootstrap.min.css')
   body
     //if lt IE 7
       p.chromeframe
         | Mikä tää on? Joku selain vai? Nyt vittu oikeesti meet lataamaan jonkun selaimen, joka on tehty tällä vuosituhannella.
-    .header-container
-      header.wrapper.clearfix
-        h1.title= title
-    .main-container
-      .main.wrapper.clearfix
-        div.pagediv
-          strong
-            p.pages
-              span.pageLabel Sivu:
-              span.numbers
-        article
-          section
-            table.table
-              thead
-                tr
-                  th Aika
-                  th Nick
-                  th URL
-              for link in links
-                tr
-                 td
-                   span.linkdate #{link.date}
-                 td
-                   span.poster #{link.poster}
-                 td
-                   span.link
-                     a(href=link.url) #{link.url}
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container
+          .brand= title
+    .container
+      .pagination.pagination-centered
+        ul.pages
+      .linkdiv
+        table.table
+          thead
+            tr
+              th Aika
+              th Nick
+              th URL
+          for link in links
+            tr
+             td
+               span.linkdate #{link.date}
+             td
+               span.poster #{link.poster}
+             td
+               span.link
+                 a(href=link.url) #{link.url}
         input(type='hidden', id='pageNum', value='#{pageNum}')
         input(type='hidden', id='pages', value='#{pages}')
       // #main
