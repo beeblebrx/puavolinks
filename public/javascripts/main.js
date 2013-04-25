@@ -17,10 +17,13 @@ function createPageLinks(element, currentPage, surroundingPages, totalPages) {
     }
 
     if (lastPage < totalPages) {
+        var lastPageNumber = totalPages - 1;
         element.append("<li><a href ='#'>…</a></li>");
+        element.append("<li><a id='" + lastPageNumber +  "' href='/?page=" + lastPageNumber + "'>" + totalPages + "</a></li>");
     }
 
     if (firstPage > 0) {
         element.prepend("<li><a href='#'>…</a></li>");
+        element.prepend("<li><a id='0' href='/?page=0'>1</a></li>");
     }
 }
